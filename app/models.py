@@ -4,7 +4,7 @@ from sqlalchemy.orm import declarative_base, sessionmaker
 Base = declarative_base()
 
 class Book(Base):
-    __tablename__ = "books"  # nome da tabela no banco
+    __tablename__ = "tb_books"  # nome da tabela no banco
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     title = Column(String, nullable=False)

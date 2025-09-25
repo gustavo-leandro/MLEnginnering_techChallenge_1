@@ -1,5 +1,6 @@
 """
 Funções de scraping para coletar dados de livros do site books.toscrape.com.
+Tabela destino: tb_books
 """
 
 import requests
@@ -38,7 +39,7 @@ def scrape_books(pages: int = 50) -> List[BookCreate]:
 			# buscando atributos dos livros
 			b_title = book_soup.find("h1").get_text(strip=True)
 
-			breadcrumbs = soup.find("ul", class_="breadcrumb").find_all("li")
+			breadcrumbs = book_soup.find("ul", class_="breadcrumb").find_all("li")
 			b_category = breadcrumbs[-2].get_text(strip=True)
 
 			class_rating = book_soup.find("p", class_="star-rating")["class"]
@@ -46,7 +47,11 @@ def scrape_books(pages: int = 50) -> List[BookCreate]:
 			b_rating = ratings_dict[class_rating[1]]
 
 			desc_header = book_soup.find("div", id="product_description")
-			b_description = desc_header.find_next_sibling("p").get_text(strip=True)
+			if desc_header:
+				desc_p = desc_header.find_next_sibling("p")
+				b_description = desc_p.get_text(strip=True) if desc_p else ""
+			else:
+				b_description = ""
 
 			img_tag = book_soup.find("div", class_="item active").img
 			b_img_src = "https://books.toscrape.com/"+img_tag["src"]
