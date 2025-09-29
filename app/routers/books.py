@@ -26,11 +26,20 @@ def scrape_and_save_books(pages: int = 2, db: Session = Depends(get_db)):
     inserted_count = crud.create_books(db, books)
     return schemas.ScrapeResponse(inserted=inserted_count)
 
-
 # /api/v1/books/search
 @api_router.get("/books/search", response_model=List[schemas.BookBase])
 def search_books(title: str = None, category: str = None, db: Session = Depends(get_db)):
     return crud.search_books(db, title=title, category=category)
+
+# /api/v1/books/top-rated
+@api_router.get("/books/top-rated", response_model=List[schemas.BookBase])
+def list_top_rated(db: Session = Depends(get_db)):
+    return crud.get_top_rated(db)
+
+# /api/v1/books/price-range
+@api_router.get("/books/price-range", response_model=List[schemas.BookBase])
+def search_books_by_price(min: float = None, max: float = None, db: Session = Depends(get_db)):
+    return crud.search_books_by_price(db, min=min, max=max)
 
 # /api/v1/books/{id}
 @api_router.get("/books/{id}", response_model=schemas.BookBase)
@@ -53,3 +62,13 @@ def health_check(db: Session = Depends(get_db)):
         return {"status": "ok", "db": True}
     except Exception:
         return {"status": "error", "db": False}
+
+# /api/v1/stats/overview
+@api_router.get("/books/stats/overview", response_model=schemas.BookStatsOverview)
+def get_stats_overview(db: Session = Depends(get_db)):
+    return crud.get_stats_overview(db)
+
+# /api/v1/stats/overview
+@api_router.get("/stats/categories", response_model=List[schemas.BookStatsCategory])
+def get_category_overview(db: Session = Depends(get_db)):
+    return crud.get_category_overview(db)

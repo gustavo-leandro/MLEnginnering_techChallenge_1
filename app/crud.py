@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from . import models, schemas
 from typing import List
+from sqlalchemy import func
 
 
 def get_books(db: Session, skip: int = 0, limit: int = 10) -> List[models.Book]:
@@ -26,5 +27,57 @@ def search_books(db: Session, title: str = None, category: str = None):
         query = query.filter(models.Book.category.ilike(f"%{category}%"))
     return query.all()
 
+def search_books_by_price(db: Session, min: float = None, max: float = None):
+    query = db.query(models.Book)
+    if min:
+        query = query.filter(models.Book.price_incl_tax >= min)
+    if max:
+        query = query.filter(models.Book.price_incl_tax <= max)
+    return query.all()
+
 def get_categories(db: Session):
     return [row[0] for row in db.query(models.Book.category).distinct().all()]
+
+def get_stats_overview(db: Session):
+    total_books = db.query(models.Book).count()
+    average_price = db.query(func.avg(models.Book.price_incl_tax)).scalar() or 0.0
+
+    rating_distribution = dict(
+    db.query(
+        models.Book.rating,
+        func.count(models.Book.id)
+    )
+    .group_by(models.Book.rating)
+    .all()
+    )
+
+    return schemas.BookStatsOverview(
+        total_books=total_books,
+        average_price=float(average_price),
+        rating_distribution=rating_distribution
+    )
+
+
+def get_category_overview(db: Session):
+
+    results = db.query(
+        models.Book.category,
+        func.count(models.Book.id),
+        func.avg(models.Book.price_incl_tax)
+    ).group_by(models.Book.category).all()
+
+    category_stats = [
+        {
+            "category": category,
+            "total_books": total,
+            "average_price": float(avg_price) if avg_price else 0.0
+        }
+        for category, total, avg_price in results
+    ]
+    return category_stats
+
+def get_top_rated(db: Session):
+
+    query = db.query(models.Book).filter(models.Book.rating == 5).all()
+
+    return query
