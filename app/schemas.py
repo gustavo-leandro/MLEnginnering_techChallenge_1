@@ -30,10 +30,6 @@ class BookCreate(BookBase):
 	"""
 	pass
 
-# class BookRead(BaseModel):
-#     id: int
-#     title: str
-
 class BookStatsOverview(BaseModel):
     total_books: int
     average_price: float
@@ -49,3 +45,7 @@ class BookStatsCategory(BaseModel):
     category: str
     total_books: int
     average_price: float
+
+class LoginResponse(BaseModel):
+    access_token: str
+    token_type: str

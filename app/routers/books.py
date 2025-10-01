@@ -4,8 +4,9 @@ from sqlalchemy.orm import Session
 from typing import List
 from app.database import SessionLocal
 from app import crud, schemas, scraping
+from app.routers.auth import get_current_user
 
-api_router = APIRouter(prefix="/api/v1", tags=["api-v1"])
+api_router = APIRouter(prefix="/api/v1", tags=["books"])
 
 def get_db():
     db = SessionLocal()
@@ -19,9 +20,9 @@ def get_db():
 def list_books(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
     return crud.get_books(db, skip=skip, limit=limit)
 
-# /api/v1/books/scrape
-@api_router.post("/books/scrape", response_model=schemas.ScrapeResponse, status_code=status.HTTP_201_CREATED)
-def scrape_and_save_books(pages: int = 2, db: Session = Depends(get_db)):
+# /api/v1/books/scraping/trigger
+@api_router.post("/books/scraping/trigger", response_model=schemas.ScrapeResponse, status_code=status.HTTP_201_CREATED)
+def scrape_and_save_books(pages: int = 2, db: Session = Depends(get_db), user: str = Depends(get_current_user)):
     books = scraping.scrape_books(pages=pages)
     inserted_count = crud.create_books(db, books)
     return schemas.ScrapeResponse(inserted=inserted_count)
@@ -48,27 +49,3 @@ def get_book(id: int, db: Session = Depends(get_db)):
     if not book:
         raise HTTPException(status_code=404, detail="Book not found")
     return book
-
-# /api/v1/categories
-@api_router.get("/categories", response_model=List[str])
-def list_categories(db: Session = Depends(get_db)):
-    return crud.get_categories(db)
-
-# /api/v1/health
-@api_router.get("/health")
-def health_check(db: Session = Depends(get_db)):
-    try:
-        db.execute(text("SELECT 1"))
-        return {"status": "ok", "db": True}
-    except Exception:
-        return {"status": "error", "db": False}
-
-# /api/v1/stats/overview
-@api_router.get("/books/stats/overview", response_model=schemas.BookStatsOverview)
-def get_stats_overview(db: Session = Depends(get_db)):
-    return crud.get_stats_overview(db)
-
-# /api/v1/stats/overview
-@api_router.get("/stats/categories", response_model=List[schemas.BookStatsCategory])
-def get_category_overview(db: Session = Depends(get_db)):
-    return crud.get_category_overview(db)
