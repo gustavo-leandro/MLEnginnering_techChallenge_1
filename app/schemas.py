@@ -46,6 +46,14 @@ class BookStatsCategory(BaseModel):
     total_books: int
     average_price: float
 
+class MLBookFeatures(BaseModel):
+    category: str
+    rating: int
+    price_excl_tax: float
+    price_incl_tax: float
+    num_available: int
+    num_reviews: int
+
 class LoginResponse(BaseModel):
     access_token: str
     token_type: str
