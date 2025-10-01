@@ -1,3 +1,9 @@
+
+"""
+Database configuration for SQLAlchemy and SQLite.
+Defines engine, session, and base class.
+"""
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 

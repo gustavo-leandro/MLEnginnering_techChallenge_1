@@ -4,7 +4,10 @@ from sqlalchemy.orm import declarative_base, sessionmaker
 Base = declarative_base()
 
 class Book(Base):
-    __tablename__ = "tb_books"  # nome da tabela no banco
+    """
+    SQLAlchemy model for the books table.
+    """
+    __tablename__ = "tb_books"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     title = Column(String, nullable=False)
@@ -19,3 +22,20 @@ class Book(Base):
     num_available = Column(Integer, nullable=False)
     num_reviews = Column(Integer, nullable=False)
     image_url = Column(String, nullable=False)
+
+
+from sqlalchemy import DateTime
+from datetime import datetime
+
+class RequestLog(Base):
+    """
+    SQLAlchemy model for logging HTTP requests.
+    """
+    __tablename__ = "request_logs"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    http_method = Column(String, nullable=False)
+    endpoint = Column(String, nullable=False)
+    status_code = Column(Integer, nullable=False)
+    duration_ms = Column(Float, nullable=False)
+    created_ts = Column(DateTime, default=datetime.utcnow, nullable=False)

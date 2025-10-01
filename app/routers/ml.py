@@ -1,3 +1,8 @@
+
+"""
+ML router: Endpoints for ML features, training data, and predictions.
+"""
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.database import SessionLocal
@@ -9,6 +14,9 @@ import random
 ml_router = APIRouter(prefix="/api/v1/ml", tags=["ml"])
 
 def get_db():
+    """
+    Dependency to get a SQLAlchemy session.
+    """
     db = SessionLocal()
     try:
         yield db
@@ -17,6 +25,9 @@ def get_db():
 
 @ml_router.get("/features", response_model=List[schemas.MLBookFeatures])
 def get_features(db: Session = Depends(get_db)):
+    """
+    Get ML features for all books.
+    """
     books = crud.get_books(db)
     features = [
         schemas.MLBookFeatures(
@@ -33,15 +44,19 @@ def get_features(db: Session = Depends(get_db)):
 
 @ml_router.get("/training-data", response_model=List[schemas.BookBase])
 def get_training_data(db: Session = Depends(get_db)):
+    """
+    Get a random subset of 100 books for ML training.
+    """
     books = crud.get_books(db)
-    # Seleciona 100 livros aleatórios
     if len(books) > 100:
         books = random.sample(books, 100)
     return books
 
 @ml_router.post("/predictions")
 def post_predictions(data: List[dict], user: str = Depends(get_current_user)):
-    # Retorna um mock de predição
+    """
+    Post data for ML predictions (mock implementation).
+    """
     predictions = [
         {"input": d, "prediction": 1} for d in data
     ]

@@ -1,6 +1,7 @@
+
 """
-Funções de scraping para coletar dados de livros do site books.toscrape.com.
-Tabela destino: tb_books
+Scraping functions to collect book data from books.toscrape.com.
+Target table: tb_books
 """
 
 import requests
@@ -14,15 +15,16 @@ BASE_URL: str = "https://books.toscrape.com/catalogue/page-{}.html"
 
 def scrape_books(pages: int = 50) -> List[BookCreate]:
 	"""
-	Realiza scraping de livros no site books.toscrape.com, coletando todas as informações relevantes.
-	:param pages: Número de páginas a coletar (default=50)
-	:return: Lista de BookCreate com os dados extraídos
+	Scrapes books from books.toscrape.com, collecting all relevant information.
+	Args:
+		pages (int): Number of pages to collect (default=50)
+	Returns:
+		List[BookCreate]: List of extracted book data
 	"""
 	books = []
 	base_site = "https://books.toscrape.com/catalogue/"
 
 	for page in range(1, pages + 1):
-
 		url = BASE_URL.format(page)
 		resp = requests.get(url)
 		resp.raise_for_status()
@@ -36,7 +38,7 @@ def scrape_books(pages: int = 50) -> List[BookCreate]:
 			book_resp.raise_for_status()
 			book_soup = BeautifulSoup(book_resp.text, "html.parser")
 
-			# buscando atributos dos livros
+			# Extract book attributes
 			b_title = book_soup.find("h1").get_text(strip=True)
 
 			breadcrumbs = book_soup.find("ul", class_="breadcrumb").find_all("li")

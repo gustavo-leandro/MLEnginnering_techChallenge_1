@@ -1,4 +1,8 @@
 
+"""
+Authentication router: Endpoints for JWT login, refresh, and user validation.
+"""
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from datetime import datetime, timedelta, timezone
@@ -14,11 +18,16 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 auth_router = APIRouter(prefix="/api/v1/auth", tags=["auth"])
 http_bearer = HTTPBearer()
 
-# Usuário mock de exemplo
 def fake_verify_user(username: str, password: str):
+    """
+    Mock user verification for demonstration purposes.
+    """
     return username == "admin" and password == "admin"
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
+    """
+    Create a JWT access token with expiration.
+    """
     to_encode = data.copy()
     expire = datetime.now(timezone.utc) + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
     to_encode.update({"exp": expire})
@@ -26,6 +35,9 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
 
 @auth_router.post("/login", response_model=LoginResponse)
 def login(username: str, password: str):
+    """
+    Login endpoint: verifies user and returns JWT token.
+    """
     if not fake_verify_user(username, password):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect username or password")
     access_token = create_access_token({"sub": username})
@@ -33,6 +45,9 @@ def login(username: str, password: str):
 
 @auth_router.post("/refresh", response_model=LoginResponse)
 def refresh_token(credentials: HTTPAuthorizationCredentials = Depends(http_bearer)):
+    """
+    Refresh endpoint: validates token and returns a new JWT token.
+    """
     token = credentials.credentials
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
@@ -45,6 +60,9 @@ def refresh_token(credentials: HTTPAuthorizationCredentials = Depends(http_beare
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
 
 def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(http_bearer)):
+    """
+    Dependency to get current user from JWT token.
+    """
     token = credentials.credentials
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
