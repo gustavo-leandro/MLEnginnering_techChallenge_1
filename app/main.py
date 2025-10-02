@@ -1,10 +1,9 @@
 """
 Main entry point for the Books Scraper API.
-Initializes FastAPI app, includes routers, and sets up request logging middleware.
+Initializes FastAPI app, includes routers, and sets up logging middleware.
 """
 
 import time
-import jwt
 from fastapi import FastAPI, Request
 from starlette.responses import Response as StarletteResponse
 from app.database import engine, SessionLocal

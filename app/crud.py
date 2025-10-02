@@ -68,7 +68,8 @@ def get_categories(db: Session):
 
 def get_stats_overview(db: Session):
     """
-    Get overview statistics for books: total, average price, rating distribution.
+    Get overview statistics for books: total, average price,
+    rating distribution.
     """
     total_books = db.query(models.Book).count()
     average_price = db.query(func.avg(models.Book.price_incl_tax)).scalar() or 0.0
