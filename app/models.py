@@ -1,5 +1,6 @@
-from sqlalchemy import Column, Integer, String, Float, create_engine
-from sqlalchemy.orm import declarative_base, sessionmaker
+from sqlalchemy import Column, Integer, String, Float, DateTime
+from sqlalchemy.orm import declarative_base
+from datetime import datetime
 
 Base = declarative_base()
 
@@ -22,10 +23,6 @@ class Book(Base):
     num_available = Column(Integer, nullable=False)
     num_reviews = Column(Integer, nullable=False)
     image_url = Column(String, nullable=False)
-
-
-from sqlalchemy import DateTime
-from datetime import datetime
 
 class RequestLog(Base):
     """
