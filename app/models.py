@@ -4,10 +4,12 @@ from datetime import datetime
 
 Base = declarative_base()
 
+
 class Book(Base):
     """
     SQLAlchemy model for the books table.
     """
+
     __tablename__ = "tb_books"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -24,10 +26,12 @@ class Book(Base):
     num_reviews = Column(Integer, nullable=False)
     image_url = Column(String, nullable=False)
 
+
 class RequestLog(Base):
     """
     SQLAlchemy model for logging HTTP requests.
     """
+
     __tablename__ = "request_logs"
 
     id = Column(Integer, primary_key=True, autoincrement=True)

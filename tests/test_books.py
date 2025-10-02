@@ -5,12 +5,15 @@ from unittest.mock import patch
 
 client = TestClient(app)
 
+
 # Mock para requests.get
 class MockResponse:
     def __init__(self, text):
         self.text = text
+
     def raise_for_status(self):
         pass
+
 
 @pytest.fixture
 @patch("app.scraping.requests.get")
@@ -67,7 +70,10 @@ def test_search_books_category_only():
 
 
 def test_search_books_title_and_category():
-    response = client.get("/api/v1/books/search", params={"title": "The Art of War", "category": "Philosophy"})
+    response = client.get(
+        "/api/v1/books/search",
+        params={"title": "The Art of War", "category": "Philosophy"},
+    )
     assert response.status_code == 200
     data = response.json()
     for book in data:

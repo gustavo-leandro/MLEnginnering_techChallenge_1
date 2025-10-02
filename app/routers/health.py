@@ -1,4 +1,3 @@
-
 """
 Health router: Endpoint for health check of API and database.
 """
@@ -10,6 +9,7 @@ from app.database import SessionLocal
 
 health_router = APIRouter(prefix="/api/v1", tags=["health"])
 
+
 def get_db():
     """
     Dependency to get a SQLAlchemy session.
@@ -19,6 +19,7 @@ def get_db():
         yield db
     finally:
         db.close()
+
 
 @health_router.get("/health")
 def health_check(db: Session = Depends(get_db)):

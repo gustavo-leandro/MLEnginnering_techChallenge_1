@@ -1,4 +1,3 @@
-
 """
 CRUD operations for Book and RequestLog models.
 Provides database interaction functions for books and request logging.
@@ -9,11 +8,13 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func
 from . import models, schemas
 
+
 def get_books(db: Session, skip: int = 0, limit: int = 10) -> List[models.Book]:
     """
     Retrieve a paginated list of books from the database.
     """
     return db.query(models.Book).offset(skip).limit(limit).all()
+
 
 def create_books(db: Session, books: List[schemas.BookBase]) -> int:
     """
@@ -26,11 +27,13 @@ def create_books(db: Session, books: List[schemas.BookBase]) -> int:
     db.commit()
     return len(books)
 
+
 def get_book_by_id(db: Session, book_id: int):
     """
     Retrieve a book by its ID.
     """
     return db.query(models.Book).filter(models.Book.id == book_id).first()
+
 
 def search_books(db: Session, title: str = None, category: str = None):
     """
@@ -43,6 +46,7 @@ def search_books(db: Session, title: str = None, category: str = None):
         query = query.filter(models.Book.category.ilike(f"%{category}%"))
     return query.all()
 
+
 def search_books_by_price(db: Session, min: float = None, max: float = None):
     """
     Search books by price range.
@@ -54,11 +58,13 @@ def search_books_by_price(db: Session, min: float = None, max: float = None):
         query = query.filter(models.Book.price_incl_tax <= max)
     return query.all()
 
+
 def get_categories(db: Session):
     """
     Get a list of all distinct book categories.
     """
     return [row[0] for row in db.query(models.Book.category).distinct().all()]
+
 
 def get_stats_overview(db: Session):
     """
@@ -68,10 +74,7 @@ def get_stats_overview(db: Session):
     average_price = db.query(func.avg(models.Book.price_incl_tax)).scalar() or 0.0
 
     rating_distribution = dict(
-        db.query(
-            models.Book.rating,
-            func.count(models.Book.id)
-        )
+        db.query(models.Book.rating, func.count(models.Book.id))
         .group_by(models.Book.rating)
         .all()
     )
@@ -79,28 +82,34 @@ def get_stats_overview(db: Session):
     return schemas.BookStatsOverview(
         total_books=total_books,
         average_price=float(average_price),
-        rating_distribution=rating_distribution
+        rating_distribution=rating_distribution,
     )
+
 
 def get_category_overview(db: Session):
     """
     Get statistics for each book category.
     """
-    results = db.query(
-        models.Book.category,
-        func.count(models.Book.id),
-        func.avg(models.Book.price_incl_tax)
-    ).group_by(models.Book.category).all()
+    results = (
+        db.query(
+            models.Book.category,
+            func.count(models.Book.id),
+            func.avg(models.Book.price_incl_tax),
+        )
+        .group_by(models.Book.category)
+        .all()
+    )
 
     category_stats = [
         {
             "category": category,
             "total_books": total,
-            "average_price": float(avg_price) if avg_price else 0.0
+            "average_price": float(avg_price) if avg_price else 0.0,
         }
         for category, total, avg_price in results
     ]
     return category_stats
+
 
 def get_top_rated(db: Session):
     """
@@ -108,7 +117,10 @@ def get_top_rated(db: Session):
     """
     return db.query(models.Book).filter(models.Book.rating == 5).all()
 
-def create_request_log(db: Session, http_method: str, endpoint: str, status_code: int, duration_ms: float):
+
+def create_request_log(
+    db: Session, http_method: str, endpoint: str, status_code: int, duration_ms: float
+):
     """
     Create a log entry for an HTTP request.
     """
@@ -116,7 +128,7 @@ def create_request_log(db: Session, http_method: str, endpoint: str, status_code
         http_method=http_method,
         endpoint=endpoint,
         status_code=status_code,
-        duration_ms=duration_ms
+        duration_ms=duration_ms,
     )
     db.add(log)
     db.commit()

@@ -1,4 +1,3 @@
-
 """
 ML router: Endpoints for ML features, training data, and predictions.
 """
@@ -13,6 +12,7 @@ import random
 
 ml_router = APIRouter(prefix="/api/v1/ml", tags=["ml"])
 
+
 def get_db():
     """
     Dependency to get a SQLAlchemy session.
@@ -22,6 +22,7 @@ def get_db():
         yield db
     finally:
         db.close()
+
 
 @ml_router.get("/features", response_model=List[schemas.MLBookFeatures])
 def get_features(db: Session = Depends(get_db)):
@@ -42,6 +43,7 @@ def get_features(db: Session = Depends(get_db)):
     ]
     return features
 
+
 @ml_router.get("/training-data", response_model=List[schemas.BookBase])
 def get_training_data(db: Session = Depends(get_db)):
     """
@@ -52,12 +54,11 @@ def get_training_data(db: Session = Depends(get_db)):
         books = random.sample(books, 100)
     return books
 
+
 @ml_router.post("/predictions")
 def post_predictions(data: List[dict], user: str = Depends(get_current_user)):
     """
     Post data for ML predictions (mock implementation).
     """
-    predictions = [
-        {"input": d, "prediction": 1} for d in data
-    ]
+    predictions = [{"input": d, "prediction": 1} for d in data]
     return {"predictions": predictions}

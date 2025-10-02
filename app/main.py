@@ -1,4 +1,3 @@
-
 """
 Main entry point for the Books Scraper API.
 Initializes FastAPI app, includes routers, and sets up request logging middleware.
@@ -24,6 +23,7 @@ models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Books Scraper API")
 
+
 @app.middleware("http")
 async def log_requests(request: Request, call_next):
     """
@@ -45,7 +45,7 @@ async def log_requests(request: Request, call_next):
             http_method=request.method,
             endpoint=request.url.path,
             status_code=status_code,
-            duration_ms=duration_ms
+            duration_ms=duration_ms,
         )
     finally:
         db.close()

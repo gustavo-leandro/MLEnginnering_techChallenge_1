@@ -1,4 +1,3 @@
-
 """
 Categories router: Endpoint for listing book categories.
 """
@@ -11,6 +10,7 @@ from typing import List
 
 categories_router = APIRouter(prefix="/api/v1", tags=["categories"])
 
+
 def get_db():
     """
     Dependency to get a SQLAlchemy session.
@@ -20,6 +20,7 @@ def get_db():
         yield db
     finally:
         db.close()
+
 
 @categories_router.get("/categories", response_model=List[str])
 def list_categories(db: Session = Depends(get_db)):

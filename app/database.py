@@ -1,4 +1,3 @@
-
 """
 Database configuration for SQLAlchemy and SQLite.
 Defines engine, session, and base class.

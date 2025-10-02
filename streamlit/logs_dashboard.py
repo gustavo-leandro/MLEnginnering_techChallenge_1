@@ -1,4 +1,3 @@
-
 """
 Streamlit dashboard for API request logs analytics.
 Filters: created_ts, http_method, endpoint, status_code
@@ -14,11 +13,13 @@ import plotly.express as px
 from app.database import SessionLocal
 from app.models import RequestLog
 
+
 def get_distinct_endpoints(db: Session) -> list:
     """
     Get all distinct endpoints from the request logs table.
     """
     return [row[0] for row in db.query(RequestLog.endpoint).distinct().all()]
+
 
 def fetch_logs(
     db: Session,
@@ -26,7 +27,7 @@ def fetch_logs(
     end_datetime: datetime,
     method: str,
     endpoint: str,
-    status: str
+    status: str,
 ) -> list:
     """
     Fetch logs from the database applying all filters.
@@ -34,7 +35,7 @@ def fetch_logs(
     query = db.query(RequestLog)
     query = query.filter(
         func.date(RequestLog.created_ts) >= start_datetime.date(),
-        func.date(RequestLog.created_ts) <= end_datetime.date()
+        func.date(RequestLog.created_ts) <= end_datetime.date(),
     )
     if method != "All":
         query = query.filter(RequestLog.http_method == method)
@@ -49,6 +50,7 @@ def fetch_logs(
             query = query.filter(RequestLog.status_code.between(500, 599))
     return query.all()
 
+
 def status_category(code: int) -> str:
     """
     Categorize status code as 2xx, 4xx, 5xx, or Other.
@@ -62,6 +64,7 @@ def status_category(code: int) -> str:
     else:
         return "Other"
 
+
 def main():
     """
     Main function to render the Streamlit dashboard.
@@ -73,7 +76,9 @@ def main():
     st.sidebar.header("Filters")
     start_default = date(2025, 9, 24)
     end_default = date.today()
-    date_range = st.sidebar.date_input("Date range:", value=(start_default, end_default))
+    date_range = st.sidebar.date_input(
+        "Date range:", value=(start_default, end_default)
+    )
     start_date, end_date = date_range
     start_datetime = datetime.combine(start_date, time.min)
     end_datetime = datetime.combine(end_date, time.max)
@@ -88,24 +93,38 @@ def main():
     status_options = ["All", "2xx", "4xx", "5xx"]
     selected_status = st.sidebar.selectbox("Status Code", status_options, index=0)
 
-    logs = fetch_logs(db, start_datetime, end_datetime, selected_method, selected_endpoint, selected_status)
+    logs = fetch_logs(
+        db,
+        start_datetime,
+        end_datetime,
+        selected_method,
+        selected_endpoint,
+        selected_status,
+    )
     db.close()
 
     # Convert to DataFrame
-    df = pd.DataFrame([{
-        "Method": log.http_method,
-        "Path": log.endpoint,
-        "Status": log.status_code,
-        "Duration(ms)": log.duration_ms,
-        "Created At": log.created_ts
-    } for log in logs])
+    df = pd.DataFrame(
+        [
+            {
+                "Method": log.http_method,
+                "Path": log.endpoint,
+                "Status": log.status_code,
+                "Duration(ms)": log.duration_ms,
+                "Created At": log.created_ts,
+            }
+            for log in logs
+        ]
+    )
 
     if not df.empty:
         df["Status Category"] = df["Status"].apply(status_category)
         df["Date"] = df["Created At"].dt.date
 
         # Request volume chart
-        df_grouped = df.groupby(["Date", "Status Category"]).size().reset_index(name="Count")
+        df_grouped = (
+            df.groupby(["Date", "Status Category"]).size().reset_index(name="Count")
+        )
         fig = px.bar(
             df_grouped,
             x="Date",
@@ -114,12 +133,8 @@ def main():
             barmode="group",
             title="Logs per day by Status",
             labels={"Count": "Number of Requests", "Date": "Date"},
-            color_discrete_map={
-                "2xx": "#328265",
-                "4xx": "#FBC766",
-                "5xx": "#E95F6B"
-            },
-            text="Count"
+            color_discrete_map={"2xx": "#328265", "4xx": "#FBC766", "5xx": "#E95F6B"},
+            text="Count",
         )
         st.plotly_chart(fig, use_container_width=True)
 
@@ -134,7 +149,7 @@ def main():
             title="Average Response Time per Endpoint",
             labels={"Duration(ms)": "Average Duration (ms)", "Path": "Endpoint"},
             color="Duration(ms)",
-            color_continuous_scale="Blues"
+            color_continuous_scale="Blues",
         )
         fig_avg.update_traces(texttemplate="%{text:.2f}", textposition="outside")
         fig_avg.update_layout(xaxis_tickangle=-45)
@@ -143,6 +158,7 @@ def main():
         st.dataframe(df.sort_values("Created At", ascending=False))
     else:
         st.write("No logs found for the selected filters.")
+
 
 if __name__ == "__main__":
     main()
