@@ -10,7 +10,7 @@ from app.schemas import LoginResponse
 import jwt
 from jwt.exceptions import InvalidTokenError
 
-SECRET_KEY = "your_secret_key_here"
+SECRET_KEY = "8*DrPteyaKzC>7m3[m1="
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
