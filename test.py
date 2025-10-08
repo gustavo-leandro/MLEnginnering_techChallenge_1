@@ -3,5 +3,5 @@ from app.database import SessionLocal
 from app import crud, schemas, scraping
 from app.routers.books import search_books
 
-db = scrape_books(pages=1)
+db = scrape_books(pages=50)
 print(db)
