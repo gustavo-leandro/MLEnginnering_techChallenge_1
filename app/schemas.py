@@ -8,10 +8,10 @@ from typing import Dict
 
 class ScrapeResponse(BaseModel):
     """
-    Schema for scrape response indicating number of inserted records.
+    Schema for scrape response indicating status message.
     """
 
-    inserted: int
+    message: str
 
 
 class BookBase(BaseModel):

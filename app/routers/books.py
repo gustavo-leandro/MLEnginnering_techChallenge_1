@@ -2,7 +2,7 @@
 Books router: Endpoints for listing, searching, scraping, and retrieving books.
 """
 
-from fastapi import APIRouter, Depends, status, HTTPException
+from fastapi import APIRouter, Depends, status, HTTPException, BackgroundTasks
 from sqlalchemy.orm import Session
 from typing import List
 from app.database import SessionLocal
@@ -37,14 +37,20 @@ def list_books(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
     status_code=status.HTTP_201_CREATED,
 )
 def scrape_and_save_books(
-    pages: int = 2, db: Session = Depends(get_db), user: str = Depends(get_current_user)
+    background_tasks: BackgroundTasks,
+    pages: int = 2,
+    db: Session = Depends(get_db),
+    user: str = Depends(get_current_user)
 ):
     """
-    Scrape books from external site and save to database.
+    Trigger book scraping from external site and save to database in the background.
+    Returns immediately with the status.
     """
-    books = scraping.scrape_books(pages=pages)
-    inserted_count = crud.create_books(db, books)
-    return schemas.ScrapeResponse(inserted=inserted_count)
+    def run_scraping():
+        books = scraping.scrape_books(pages=pages)
+        crud.create_books(db, books)
+    background_tasks.add_task(run_scraping)
+    return schemas.ScrapeResponse(message="Scraping started in background")
 
 
 @api_router.get("/books/search", response_model=List[schemas.BookBase])
