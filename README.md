@@ -2,16 +2,16 @@
 
 ## Project Overview
 
-Books Scraper API é uma aplicação desenvolvida com FastAPI que realiza o web scraping de livros do site [Books to Scrape](https://books.toscrape.com/), armazena os dados em um banco PostgreSQL (via Supabase) e expõe uma API REST completa para consulta, análise e integração com modelos de Machine Learning.
+Books Scraper API is an application developed with FastAPI that performs web scraping of books from [Books to Scrape](https://books.toscrape.com/), stores data in a PostgreSQL database (via Supabase), and exposes a complete REST API for querying, analysis, and integration with Machine Learning models.
 
-O projeto também inclui:
-* Autenticação JWT
+The project also includes:
+* JWT Authentication
 * SQLAlchemy ORM
-* Registro estruturado de logs
-* Dashboard interativo com Streamlit para visualização e análise de logs e estatísticas
+* Structured logging
+* Interactive Streamlit dashboard for log visualization and statistics analysis
 
-Repositório no GitHub: [gustavo-leandro/MLEnginnering_techChallenge_1](https://github.com/gustavo-leandro/MLEnginnering_techChallenge_1.git)  
-API em produção: [https://gleandro-book-api-996cbfb885c8.herokuapp.com/](https://gleandro-book-api-996cbfb885c8.herokuapp.com/)
+GitHub Repository: [gustavo-leandro/MLEnginnering_techChallenge_1](https://github.com/gustavo-leandro/MLEnginnering_techChallenge_1.git)  
+Production API: [https://gleandro-book-api-996cbfb885c8.herokuapp.com/](https://gleandro-book-api-996cbfb885c8.herokuapp.com/)
 
 ## Architecture Overview
 
@@ -27,7 +27,7 @@ API em produção: [https://gleandro-book-api-996cbfb885c8.herokuapp.com/](https
 
 ## Architectural Plan
 
-#### Data Pipeline
+### Data Pipeline
 
 The system follows a complete data pipeline from ingestion to consumption, designed for modularity, scalability, and ML integration.
 
@@ -35,17 +35,15 @@ The system follows a complete data pipeline from ingestion to consumption, desig
    The scraping module extracts information from [books.toscrape.com](https://books.toscrape.com/), collecting attributes such as title, category, price, and rating.
 
 2. **Processing and Storage:**  
-   Data is processed and stored in a **PostgreSQL** database hosted on **Supabase**, using **SQLAlchemy** for ORM mapping and queries.  
-   Each scraping execution is logged for traceability and reproducibility.
+   Data is processed and stored in a **PostgreSQL** database hosted on **Supabase**, using **SQLAlchemy** for ORM mapping and queries. Each scraping execution is logged for traceability and reproducibility.
 
 3. **API Exposure:**  
-   The **FastAPI** application exposes RESTful endpoints organized by responsibility.  
-   All routes use **JWT authentication**, and every HTTP request is logged in structured form for analysis through the **Streamlit** dashboard.
+   The **FastAPI** application exposes RESTful endpoints organized by responsibility. All routes use **JWT authentication**, and every HTTP request is logged in structured form for analysis through the **Streamlit** dashboard.
 
 4. **Data Consumption:**  
    Data scientists can directly consume structured datasets from the `/api/v1/ml/features` and `/api/v1/ml/training-data` endpoints, enabling analytical workflows and machine learning experiments.
 
-#### Architecture and Scalability
+### Architecture and Scalability
 
 The architecture was designed with maintainability and future scalability in mind:
 
@@ -54,7 +52,7 @@ The architecture was designed with maintainability and future scalability in min
 * **Containerization-ready:** easily deployable via **Docker** and orchestrated with **Kubernetes** or serverless platforms.  
 * **Observability:** structured logs can be integrated with monitoring tools such as **Prometheus**, **Grafana**, or **DataDog**.
 
-#### Data Science and ML Use Case
+### Data Science and ML Use Case
 
 The project provides a structured and reliable data foundation for analytics and machine learning:
 
@@ -63,7 +61,7 @@ The project provides a structured and reliable data foundation for analytics and
 * Ideal for developing models for recommendation, price prediction, or rating analysis.  
 * Predictions can be submitted back to the API for evaluation and tracking.
 
-#### Machine Learning Integration Plan
+### Machine Learning Integration Plan
 
 The ML module was designed for incremental integration and deployment:
 
@@ -74,145 +72,160 @@ The ML module was designed for incremental integration and deployment:
 
 ## Installation and Setup
 
-### 1. Clonar o repositório
+### 1. Clone the repository
 
-```bash
+```
+
 git clone https://github.com/gustavo-leandro/MLEnginnering_techChallenge_1.git
 cd MLEnginnering_techChallenge_1
+
 ```
 
-### 2. Instalar dependências (Python 3.12+)
+### 2. Install dependencies (Python 3.12+)
 
-```bash
+```
+
 poetry install
+
 ```
 
-### 3. Configurar o banco de dados
+### 3. Configure the database
 
-1. Crie um projeto no Supabase e obtenha a connection string PostgreSQL.
-2. No arquivo `app/database.py`, defina a URL:
-   ```python
-   SQLALCHEMY_DATABASE_URL = "postgresql+psycopg2://username:password@host:port/dbname"
-   ```
-3. Instale o driver do PostgreSQL:
-   ```bash
-   poetry add psycopg2-binary
-   ```
+1. Create a project on Supabase and obtain the PostgreSQL connection string.
+2. In the `app/database.py` file, define the URL:
+```
 
-### 4. Variáveis de ambiente (opcional)
+SQLALCHEMY_DATABASE_URL = "postgresql+psycopg2://username:password@host:port/dbname"
 
-Configure suas credenciais e segredos no arquivo `.env`.  
+```
+3. Install the PostgreSQL driver:
+```
+
+poetry add psycopg2-binary
+
+```
+
+### 4. Environment variables (optional)
+
+Configure your credentials and secrets in the `.env` file.
 
 ## API Routes Documentation
 
-A API segue uma estrutura RESTful organizada em módulos.
+The API follows a RESTful structure organized into modules.
 
 ### Authentication
 
-| Método | Rota | Descrição |
+| Method | Route | Description |
 |--------|------|------------|
-| POST | `/api/v1/auth/login` | Autenticação via usuário e senha |
-| POST | `/api/v1/auth/refresh` | Gera novo token JWT |
+| POST | `/api/v1/auth/login` | Authentication via username and password |
+| POST | `/api/v1/auth/refresh` | Generate new JWT token |
 
 ### Books
 
-| Método | Rota | Descrição |
+| Method | Route | Description |
 |--------|------|------------|
-| GET | `/api/v1/books/` | Lista livros (paginação) |
-| POST | `/api/v1/books/scraping/trigger` | Executa scraping e salva no banco |
-| GET | `/api/v1/books/search` | Busca livros por título ou categoria |
-| GET | `/api/v1/books/top-rated` | Lista livros com melhor avaliação |
-| GET | `/api/v1/books/price-range` | Busca livros por faixa de preço |
-| GET | `/api/v1/books/{id}` | Obtém livro por ID |
+| GET | `/api/v1/books/` | List books (paginated) |
+| POST | `/api/v1/books/scraping/trigger` | Execute scraping and save to database |
+| GET | `/api/v1/books/search` | Search books by title or category |
+| GET | `/api/v1/books/top-rated` | List top-rated books |
+| GET | `/api/v1/books/price-range` | Search books by price range |
+| GET | `/api/v1/books/{id}` | Get book by ID |
 
 ### Categories
 
-| Método | Rota | Descrição |
+| Method | Route | Description |
 |--------|------|------------|
-| GET | `/api/v1/categories` | Lista todas as categorias |
+| GET | `/api/v1/categories` | List all categories |
 
 ### Health
 
-| Método | Rota | Descrição |
+| Method | Route | Description |
 |--------|------|------------|
-| GET | `/api/v1/health` | Verifica status da API e do banco |
+| GET | `/api/v1/health` | Check API and database status |
 
 ### Stats
 
-| Método | Rota | Descrição |
+| Method | Route | Description |
 |--------|------|------------|
-| GET | `/api/v1/stats/overview` | Estatísticas gerais de livros |
-| GET | `/api/v1/stats/categories` | Estatísticas por categoria |
-| GET | `/api/v1/stats/top-rated` | Livros com maiores notas |
-| GET | `/api/v1/stats/price-range` | Livros dentro de uma faixa de preço |
+| GET | `/api/v1/stats/overview` | General book statistics |
+| GET | `/api/v1/stats/categories` | Statistics by category |
+| GET | `/api/v1/stats/top-rated` | Top-rated books |
+| GET | `/api/v1/stats/price-range` | Books within a price range |
 
 ### Machine Learning
 
-| Método | Rota | Descrição |
+| Method | Route | Description |
 |--------|------|------------|
-| GET | `/api/v1/ml/features` | Retorna features para uso em ML |
-| GET | `/api/v1/ml/training-data` | Retorna amostra aleatória de 100 livros |
-| POST | `/api/v1/ml/predictions` | Envia dados e retorna predições (autenticado) |
+| GET | `/api/v1/ml/features` | Returns features for ML use |
+| GET | `/api/v1/ml/training-data` | Returns random sample of 100 books |
+| POST | `/api/v1/ml/predictions` | Submit data and return predictions (authenticated) |
 
 ## Example Requests and Responses
 
 ### Login
 
-```http
+```
+
 POST /api/v1/auth/login
 Content-Type: application/json
 
 {
-    "username": "admin",
-    "password": "admin"
+"username": "admin",
+"password": "admin"
 }
+
 ```
 
 **Response:**
-```json
+```
+
 {
-    "access_token": "eyJhbGciOi...",
-    "token_type": "bearer"
+"access_token": "eyJhbGciOi...",
+"token_type": "bearer"
 }
+
 ```
 
 ## Running the Application
 
 ### Local
 
-```bash
-poetry run uvicorn app.main:app --reload
 ```
 
-Acesse a API em:  
+poetry run uvicorn app.main:app --reload
+
+```
+
+Access the API at:  
 [http://localhost:8000](http://localhost:8000)
 
-Documentação interativa:
+Interactive documentation:
 - Swagger UI: [http://localhost:8000/docs](http://localhost:8000/docs)
 - Redoc: [http://localhost:8000/redoc](http://localhost:8000/redoc)
 
 ### Streamlit Dashboard
 
-```bash
-streamlit run dashboard.py
 ```
 
-Disponível em:  
+streamlit run dashboard.py
+
+```
+
+Available at:  
 [http://localhost:8501](http://localhost:8501)
 
 ## Deployed Version
 
-A versão de produção está disponível em:  
+The production version is available at:  
 [https://gleandro-book-api-996cbfb885c8.herokuapp.com/](https://gleandro-book-api-996cbfb885c8.herokuapp.com/)
 
 ## Additional Notes
 
-* Todas as requisições HTTP são registradas na tabela `request_logs`.
-* Em produção, use variáveis de ambiente para segredos e conexões.
-* A lógica de scraping é adaptada para books.toscrape.com e pode ser ajustada para outras fontes.
-* Endpoints de ML estão prontos para integração com modelos personalizados.
+* All HTTP requests are logged in the `request_logs` table.
+* In production, use environment variables for secrets and connections.
+* The scraping logic is adapted for books.toscrape.com and can be adjusted for other sources.
+* ML endpoints are ready for integration with custom models.
 
 ## License
 
-Este projeto é distribuído sob a Licença GNU General Public License v3.0 (GPL-3.0).
-Você pode redistribuir e/ou modificar este software de acordo com os termos da GPL-3.0, conforme publicada pela Free Software Foundation.
+This project is distributed under the GNU General Public License v3.0 (GPL-3.0). You may redistribute and/or modify this software under the terms of the GPL-3.0, as published by the Free Software Foundation.
