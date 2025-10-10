@@ -1,235 +1,171 @@
 # Books Scraper API
 
-## Project Description
+## Project Overview
 
-Books Scraper API is a FastAPI-based application designed to scrape book data from books.toscrape.com, store it in a PostgreSQL (Supabase) database, and provide a robust REST API for querying, analytics, and machine learning consumption. The project follows best practices in Python backend development, including modular routers, JWT authentication, SQLAlchemy ORM, and structured logging of all HTTP requests. A Streamlit dashboard is included for log analytics.
+Books Scraper API é uma aplicação desenvolvida com FastAPI que realiza o web scraping de livros do site [Books to Scrape](https://books.toscrape.com/), armazena os dados em um banco PostgreSQL (via Supabase) e expõe uma API REST completa para consulta, análise e integração com modelos de Machine Learning.
 
-### Architecture Overview
+O projeto também inclui:
+* Autenticação JWT
+* SQLAlchemy ORM
+* Registro estruturado de logs
+* Dashboard interativo com Streamlit para visualização e análise de logs e estatísticas
 
-- FastAPI: Main web framework for API endpoints
-- SQLAlchemy: ORM for database models and queries
-- PostgreSQL (Supabase): Cloud database for persistent storage
-- JWT Authentication: Secure access to protected routes
-- Routers: Modular separation of API endpoints by responsibility
-- Structured Logging: All HTTP requests are logged in the database
-- Streamlit: Dashboard for log analytics and monitoring
+Repositório no GitHub: [gustavo-leandro/MLEnginnering_techChallenge_1](https://github.com/gustavo-leandro/MLEnginnering_techChallenge_1.git)  
+API em produção: [https://gleandro-book-api-996cbfb885c8.herokuapp.com/](https://gleandro-book-api-996cbfb885c8.herokuapp.com/)
 
-## Installation and Configuration
+## Architecture Overview
 
-1. Clone the repository
-	 ```sh
-	 git clone https://github.com/yourusername/yourrepo.git
-	 cd yourrepo
-	 ```
+| Componente | Descrição |
+|-------------|------------|
+| FastAPI | Framework principal para criação dos endpoints da API |
+| SQLAlchemy | ORM para definição de modelos e consultas |
+| PostgreSQL (Supabase) | Banco de dados em nuvem para persistência dos dados |
+| JWT Authentication | Controle de acesso seguro para rotas protegidas |
+| Routers Modulares | Separação de responsabilidades entre os endpoints |
+| Structured Logging | Registro de todas as requisições HTTP no banco |
+| Streamlit | Dashboard para análise de logs e monitoramento da aplicação |
 
-2. Install dependencies (requires Python 3.12+)
-	 ```sh
-	 poetry install
-	 ```
+## Installation and Setup
 
-3. Configure the database
-	 - Create a project in Supabase and obtain the PostgreSQL connection string.
-	 - Edit `app/database.py` and set:
-		 ```python
-		 SQLALCHEMY_DATABASE_URL = "postgresql+psycopg2://username:password@host:port/dbname"
-		 ```
-	 - Install the PostgreSQL driver:
-		 ```sh
-		 poetry add psycopg2-binary
-		 ```
+### 1. Clonar o repositório
 
-4. Environment variables (optional)
-	 - You may use environment variables for secrets and connection strings. See `.env.example` for reference.
+```bash
+git clone https://github.com/gustavo-leandro/MLEnginnering_techChallenge_1.git
+cd MLEnginnering_techChallenge_1
+```
+
+### 2. Instalar dependências (Python 3.12+)
+
+```bash
+poetry install
+```
+
+### 3. Configurar o banco de dados
+
+1. Crie um projeto no Supabase e obtenha a connection string PostgreSQL.
+2. No arquivo `app/database.py`, defina a URL:
+   ```python
+   SQLALCHEMY_DATABASE_URL = "postgresql+psycopg2://username:password@host:port/dbname"
+   ```
+3. Instale o driver do PostgreSQL:
+   ```bash
+   poetry add psycopg2-binary
+   ```
+
+### 4. Variáveis de ambiente (opcional)
+
+Configure suas credenciais e segredos no arquivo `.env`.  
 
 ## API Routes Documentation
 
+A API segue uma estrutura RESTful organizada em módulos.
+
 ### Authentication
 
-- POST /api/v1/auth/login
-	- Request: `{ "username": "admin", "password": "admin" }`
-	- Response: `{ "access_token": "...", "token_type": "bearer" }`
-
-- POST /api/v1/auth/refresh
-	- Request: Bearer token in Authorization header
-	- Response: `{ "access_token": "...", "token_type": "bearer" }`
+| Método | Rota | Descrição |
+|--------|------|------------|
+| POST | `/api/v1/auth/login` | Autenticação via usuário e senha |
+| POST | `/api/v1/auth/refresh` | Gera novo token JWT |
 
 ### Books
 
-- GET /api/v1/books/
-	- List books with pagination
-	- Query params: `skip`, `limit`
-	- Response: List of book objects
-
-- POST /api/v1/books/scraping/trigger
-	- Scrape books and save to database (protected)
-	- Request: `{ "pages": 2 }`
-	- Response: `{ "inserted": 40 }`
-
-- GET /api/v1/books/search
-	- Search books by title and/or category
-	- Query params: `title`, `category`
-	- Response: List of book objects
-
-- GET /api/v1/books/top-rated
-	- List books with top rating
-	- Response: List of book objects
-
-- GET /api/v1/books/price-range
-	- Search books by price range
-	- Query params: `min`, `max`
-	- Response: List of book objects
-
-- GET /api/v1/books/{id}
-	- Get book by ID
-	- Response: Book object
+| Método | Rota | Descrição |
+|--------|------|------------|
+| GET | `/api/v1/books/` | Lista livros (paginação) |
+| POST | `/api/v1/books/scraping/trigger` | Executa scraping e salva no banco |
+| GET | `/api/v1/books/search` | Busca livros por título ou categoria |
+| GET | `/api/v1/books/top-rated` | Lista livros com melhor avaliação |
+| GET | `/api/v1/books/price-range` | Busca livros por faixa de preço |
+| GET | `/api/v1/books/{id}` | Obtém livro por ID |
 
 ### Categories
 
-- GET /api/v1/categories
-	- List all book categories
-	- Response: List of strings
+| Método | Rota | Descrição |
+|--------|------|------------|
+| GET | `/api/v1/categories` | Lista todas as categorias |
 
 ### Health
 
-- GET /api/v1/health
-	- Health check for API and database
-	- Response: `{ "status": "ok", "db": true }`
+| Método | Rota | Descrição |
+|--------|------|------------|
+| GET | `/api/v1/health` | Verifica status da API e do banco |
 
 ### Stats
 
-- GET /api/v1/stats/overview
-	- Get overview statistics for books
-	- Response: `{ "total_books": 100, "avg_price": 25.0, "rating_distribution": {"1": 5, "2": 10, ...} }`
-
-- GET /api/v1/stats/categories
-	- Get statistics by book category
-	- Response: List of category stats
-
-- GET /api/v1/stats/top-rated
-	- Get books with top rating
-	- Response: List of book objects
-
-- GET /api/v1/stats/price-range
-	- Get books within a price range
-	- Query params: `min`, `max`
-	- Response: List of book objects
+| Método | Rota | Descrição |
+|--------|------|------------|
+| GET | `/api/v1/stats/overview` | Estatísticas gerais de livros |
+| GET | `/api/v1/stats/categories` | Estatísticas por categoria |
+| GET | `/api/v1/stats/top-rated` | Livros com maiores notas |
+| GET | `/api/v1/stats/price-range` | Livros dentro de uma faixa de preço |
 
 ### Machine Learning
 
-- GET /api/v1/ml/features
-	- Get ML features for all books
-	- Response: List of feature objects
-
-- GET /api/v1/ml/training-data
-	- Get a random subset of 100 books for ML training
-	- Response: List of book objects
-
-- POST /api/v1/ml/predictions
-	- Post data for ML predictions (protected)
-	- Request: List of feature dicts
-	- Response: `{ "predictions": [ { "input": {...}, "prediction": 1 }, ... ] }`
+| Método | Rota | Descrição |
+|--------|------|------------|
+| GET | `/api/v1/ml/features` | Retorna features para uso em ML |
+| GET | `/api/v1/ml/training-data` | Retorna amostra aleatória de 100 livros |
+| POST | `/api/v1/ml/predictions` | Envia dados e retorna predições (autenticado) |
 
 ## Example Requests and Responses
 
-### Authentication
+### Login
 
-Login
 ```http
 POST /api/v1/auth/login
 Content-Type: application/json
 
 {
-	"username": "admin",
-	"password": "admin"
-}
-```
-Response:
-```json
-{
-	"access_token": "eyJ...",
-	"token_type": "bearer"
+    "username": "admin",
+    "password": "admin"
 }
 ```
 
-Refresh Token
-```http
-POST /api/v1/auth/refresh
-Authorization: Bearer eyJ...
-```
-Response:
+**Response:**
 ```json
 {
-	"access_token": "eyJ...",
-	"token_type": "bearer"
-}
-```
-
-### Books
-
-List Books
-```http
-GET /api/v1/books/?skip=0&limit=10
-```
-Response:
-```json
-[
-	{
-		"id": 1,
-		"title": "Book Title",
-		"category": "Fiction",
-		"rating": 4,
-		"description": "...",
-		"upc": "...",
-		"product_type": "...",
-		"price_excl_tax": 20.0,
-		"price_incl_tax": 22.0,
-		"tax": 2.0,
-		"num_available": 5,
-		"num_reviews": 10,
-		"image_url": "..."
-	},
-	...
-]
-```
-
-Scrape and Save Books
-```http
-POST /api/v1/books/scraping/trigger
-Authorization: Bearer eyJ...
-Content-Type: application/json
-
-{
-	"pages": 2
-}
-```
-Response:
-```json
-{
-	"inserted": 40
+    "access_token": "eyJhbGciOi...",
+    "token_type": "bearer"
 }
 ```
 
 ## Running the Application
 
-1. Start the FastAPI server
-	 ```sh
-	 poetry run uvicorn app.main:app --reload
-	 ```
-	 The API will be available at http://localhost:8000.
+### Local
 
-2. Access the interactive API docs
-	 - Swagger UI: http://localhost:8000/docs
-	 - Redoc: http://localhost:8000/redoc
+```bash
+poetry run uvicorn app.main:app --reload
+```
 
-3. Run the Streamlit dashboard
-	 ```sh
-	 streamlit run streamlit/logs_dashboard.py
-	 ```
-	 The dashboard will be available at http://localhost:8501.
+Acesse a API em:  
+[http://localhost:8000](http://localhost:8000)
+
+Documentação interativa:
+- Swagger UI: [http://localhost:8000/docs](http://localhost:8000/docs)
+- Redoc: [http://localhost:8000/redoc](http://localhost:8000/redoc)
+
+### Streamlit Dashboard
+
+```bash
+streamlit run dashboard.py
+```
+
+Disponível em:  
+[http://localhost:8501](http://localhost:8501)
+
+## Deployed Version
+
+A versão de produção está disponível em:  
+[https://gleandro-book-api-996cbfb885c8.herokuapp.com/](https://gleandro-book-api-996cbfb885c8.herokuapp.com/)
 
 ## Additional Notes
 
-- All HTTP requests are logged in the request_logs table for analytics and monitoring.
-- For production, configure secrets and connection strings via environment variables.
-- The scraping logic is tailored for books.toscrape.com and may require adjustments for other sources.
-- Machine learning endpoints are ready for integration with your models.
+* Todas as requisições HTTP são registradas na tabela `request_logs`.
+* Em produção, use variáveis de ambiente para segredos e conexões.
+* A lógica de scraping é adaptada para books.toscrape.com e pode ser ajustada para outras fontes.
+* Endpoints de ML estão prontos para integração com modelos personalizados.
+
+## License
+
+Este projeto é distribuído sob a Licença GNU General Public License v3.0 (GPL-3.0).
+Você pode redistribuir e/ou modificar este software de acordo com os termos da GPL-3.0, conforme publicada pela Free Software Foundation.
