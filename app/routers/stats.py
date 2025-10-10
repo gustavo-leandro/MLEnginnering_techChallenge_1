@@ -22,7 +22,7 @@ def get_db():
         db.close()
 
 
-@stats_router.get("/overview")
+@stats_router.get("/overview", response_model=schemas.BookStatsOverview)
 def stats_overview(db: Session = Depends(get_db)):
     """
     Get overview statistics for books.
