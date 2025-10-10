@@ -46,16 +46,9 @@ def stats_categories(db: Session = Depends(get_db)):
 
 
 @stats_router.get("/top-rated", response_model=List[schemas.BookBase])
-def top_rated_books(db: Session = Depends(get_db)):
+def list_top_rated(db: Session = Depends(get_db)):
     """
-    Get books with top rating.
+    List books with top rating.
     """
-    return crud.top_rated_books(db)
+    return crud.get_top_rated(db)
 
-
-@stats_router.get("/price-range", response_model=List[schemas.BookBase])
-def books_price_range(min: float, max: float, db: Session = Depends(get_db)):
-    """
-    Get books within a price range.
-    """
-    return crud.books_in_price_range(db, min, max)
