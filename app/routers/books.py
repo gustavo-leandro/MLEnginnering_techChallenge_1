@@ -44,9 +44,11 @@ def scrape_and_save_books(
 ):
     """
     Trigger book scraping from external site and save to database in the background.
+    Truncates the books table before scraping.
     Returns immediately with the status.
     """
     def run_scraping():
+        crud.truncate_books(db)
         books = scraping.scrape_books(pages=pages)
         crud.create_books(db, books)
     background_tasks.add_task(run_scraping)

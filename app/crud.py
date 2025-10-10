@@ -135,3 +135,10 @@ def create_request_log(
     db.commit()
     db.refresh(log)
     return log
+
+def truncate_books(db: Session):
+    """
+    Truncate the books table.
+    """
+    db.query(models.Book).delete()
+    db.commit()
