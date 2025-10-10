@@ -15,15 +15,62 @@ API em produção: [https://gleandro-book-api-996cbfb885c8.herokuapp.com/](https
 
 ## Architecture Overview
 
-| Componente | Descrição |
-|-------------|------------|
-| FastAPI | Framework principal para criação dos endpoints da API |
-| SQLAlchemy | ORM para definição de modelos e consultas |
-| PostgreSQL (Supabase) | Banco de dados em nuvem para persistência dos dados |
-| JWT Authentication | Controle de acesso seguro para rotas protegidas |
-| Routers Modulares | Separação de responsabilidades entre os endpoints |
-| Structured Logging | Registro de todas as requisições HTTP no banco |
-| Streamlit | Dashboard para análise de logs e monitoramento da aplicação |
+| Component | Description |
+|------------|-------------|
+| FastAPI | Main web framework for building the API endpoints |
+| SQLAlchemy | ORM for defining database models and executing queries |
+| PostgreSQL (Supabase) | Cloud database for persistent storage |
+| JWT Authentication | Secure access control for protected routes |
+| Modular Routers | Separation of concerns between API modules |
+| Structured Logging | All HTTP requests are logged in the database |
+| Streamlit | Dashboard for analytics and monitoring |
+
+## Architectural Plan
+
+#### Data Pipeline
+
+The system follows a complete data pipeline from ingestion to consumption, designed for modularity, scalability, and ML integration.
+
+1. **Data Ingestion:**  
+   The scraping module extracts information from [books.toscrape.com](https://books.toscrape.com/), collecting attributes such as title, category, price, and rating.
+
+2. **Processing and Storage:**  
+   Data is processed and stored in a **PostgreSQL** database hosted on **Supabase**, using **SQLAlchemy** for ORM mapping and queries.  
+   Each scraping execution is logged for traceability and reproducibility.
+
+3. **API Exposure:**  
+   The **FastAPI** application exposes RESTful endpoints organized by responsibility.  
+   All routes use **JWT authentication**, and every HTTP request is logged in structured form for analysis through the **Streamlit** dashboard.
+
+4. **Data Consumption:**  
+   Data scientists can directly consume structured datasets from the `/api/v1/ml/features` and `/api/v1/ml/training-data` endpoints, enabling analytical workflows and machine learning experiments.
+
+#### Architecture and Scalability
+
+The architecture was designed with maintainability and future scalability in mind:
+
+* **Independent modules:** scraping, API, authentication, monitoring, and ML components are decoupled.  
+* **Scalable storage:** **Supabase** supports horizontal scaling and replication.  
+* **Containerization-ready:** easily deployable via **Docker** and orchestrated with **Kubernetes** or serverless platforms.  
+* **Observability:** structured logs can be integrated with monitoring tools such as **Prometheus**, **Grafana**, or **DataDog**.
+
+#### Data Science and ML Use Case
+
+The project provides a structured and reliable data foundation for analytics and machine learning:
+
+* Dedicated endpoints for retrieving ML-ready features and training samples.  
+* Easy integration with **Jupyter notebooks** or **MLOps pipelines**.  
+* Ideal for developing models for recommendation, price prediction, or rating analysis.  
+* Predictions can be submitted back to the API for evaluation and tracking.
+
+#### Machine Learning Integration Plan
+
+The ML module was designed for incremental integration and deployment:
+
+1. **Feature export:** available through `/api/v1/ml/features` in JSON format.  
+2. **External training:** models can be trained externally and versioned independently.  
+3. **Model deployment:** trained models can be integrated into the API with dedicated inference endpoints.  
+4. **Monitoring and metrics:** model performance and logs can be tracked using **Streamlit** or external observability tools.
 
 ## Installation and Setup
 
