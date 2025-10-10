@@ -63,14 +63,6 @@ def search_books(
     return crud.search_books(db, title=title, category=category)
 
 
-@api_router.get("/books/top-rated", response_model=List[schemas.BookBase])
-def list_top_rated(db: Session = Depends(get_db)):
-    """
-    List books with top rating.
-    """
-    return crud.get_top_rated(db)
-
-
 @api_router.get("/books/price-range", response_model=List[schemas.BookBase])
 def search_books_by_price(
     min: float = None, max: float = None, db: Session = Depends(get_db)

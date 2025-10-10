@@ -27,14 +27,7 @@ def stats_overview(db: Session = Depends(get_db)):
     """
     Get overview statistics for books.
     """
-    total_books = crud.count_books(db)
-    avg_price = crud.avg_price(db)
-    rating_dist = crud.rating_distribution(db)
-    return {
-        "total_books": total_books,
-        "avg_price": avg_price,
-        "rating_distribution": rating_dist,
-    }
+    return crud.get_stats_overview(db)
 
 
 @stats_router.get("/categories")
@@ -42,7 +35,7 @@ def stats_categories(db: Session = Depends(get_db)):
     """
     Get statistics by book category.
     """
-    return crud.stats_by_category(db)
+    return crud.get_category_overview(db)
 
 
 @stats_router.get("/top-rated", response_model=List[schemas.BookBase])
