@@ -48,9 +48,17 @@ The system follows a complete data pipeline from ingestion to consumption, desig
 The architecture was designed with maintainability and future scalability in mind:
 
 * **Independent modules:** scraping, API, authentication, monitoring, and ML components are decoupled.  
-* **Scalable storage:** **Supabase** supports horizontal scaling and replication.  
+* **Decoupled database layer:** the database is abstracted through SQLAlchemy, allowing the system to scale or migrate easily. The current implementation uses PostgreSQL, which could be hosted on a managed service such as AWS RDS to support horizontal scaling, replication, and high availability.  
 * **Containerization-ready:** easily deployable via **Docker** and orchestrated with **Kubernetes** or serverless platforms.  
 * **Observability:** structured logs can be integrated with monitoring tools such as **Prometheus**, **Grafana**, or **DataDog**.
+
+### Architectural Diagram
+
+#### Current
+![Current Architecture](img_current_architecture.png)
+
+#### Future/Proposed
+![Proposed Architecture](img_proposed_architecture.png)
 
 ### Data Science and ML Use Case
 
