@@ -11,7 +11,10 @@ The project also includes:
 * Interactive Streamlit dashboard for log visualization and statistics analysis
 
 GitHub Repository: [gustavo-leandro/MLEnginnering_techChallenge_1](https://github.com/gustavo-leandro/MLEnginnering_techChallenge_1.git)  
-Production API: [https://gleandro-book-api-996cbfb885c8.herokuapp.com/](https://gleandro-book-api-996cbfb885c8.herokuapp.com/)
+
+Production API: [https://gleandro-book-api-996cbfb885c8.herokuapp.com/](https://gleandro-book-api-996cbfb885c8.herokuapp.com/) 
+
+Presentation Video: [https://youtu.be/LOBP1qetA_0](https://youtu.be/LOBP1qetA_0)
 
 ## Architecture Overview
 
@@ -49,7 +52,6 @@ The architecture was designed with maintainability and future scalability in min
 
 * **Independent modules:** scraping, API, authentication, monitoring, and ML components are decoupled.  
 * **Decoupled database layer:** the database is abstracted through SQLAlchemy, allowing the system to scale or migrate easily. The current implementation uses PostgreSQL, which could be hosted on a managed service such as AWS RDS to support horizontal scaling, replication, and high availability.  
-* **Containerization-ready:** easily deployable via **Docker** and orchestrated with **Kubernetes** or serverless platforms.  
 * **Observability:** structured logs can be integrated with monitoring tools such as **Prometheus**, **Grafana**, or **DataDog**.
 
 ### Architectural Diagram
